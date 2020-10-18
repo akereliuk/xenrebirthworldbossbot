@@ -147,7 +147,7 @@ const commands = {
                 }
             })();
         },
-        "description": "Returns the server status and number of users online.",
+        "description": "Returns current server time.",
         "type": "single"
     },
 };
