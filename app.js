@@ -94,7 +94,7 @@ const commands = {
                             var string = worldboss_data[1];
                             string = string.split(/[ ,]+/);
 
-                            if(worldboss_data[0] !== "SPAWNED !!!"){
+                            if(worldboss_data[1] !== "SPAWNED !!!"){
                                 message.channel.send('*' + worldboss_data[0] + '* in __10m__');
                             }
 
