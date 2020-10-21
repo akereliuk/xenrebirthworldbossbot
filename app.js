@@ -195,11 +195,21 @@ async function getWorldBossAlerts(){
         await page.waitForSelector('#event-listing');
 
         const curr_alert = await page.evaluate(() => {
-            if(typeof document.querySelectorAll("#event-listing .bossRow .event-name strong")[0] === "undefined"){
+            if(typeof document.querySelectorAll("#event-listing .bossRow .event-name strong")[0] === "undefined"
+                || typeof document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[0] === "undefined"){
                 return 0;
             }
             else{
-                return "*" + document.querySelectorAll("#event-listing .bossRow .event-name strong")[0].textContent + "* in __10m__";
+
+                var string = document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[0].textContent;
+                string = string.split(/[ ,]+/);
+
+                if(string[1] !== "SPAWNED !!!"){
+                    return "*" + document.querySelectorAll("#event-listing .bossRow .event-name strong")[0].textContent + "* in __10m__";
+                }
+                else{
+                    return "Wait";
+                }
             }
         });
 
@@ -239,12 +249,14 @@ async function getServerStatus(){
     }
 }
 
-async function recursiveTry(_func, full_msg){
-    test = await _func();
-    if(!test){
-        recursiveTry(_func, full_msg);
+async function recursiveTry(_func, message){
+    returnToScreen = await _func();
+    if(!returnToScreen){
+        recursiveTry(_func, message);
     }
     else{
-        message.channel.send(full_msg);
+        if(returnToScreen !== "Wait"){
+            message.channel.send(returnToScreen);
+        }
     }
 }
