@@ -16,28 +16,7 @@ const commands = {
     "!serverstatus":
     {
         "function": function(message){
-            (async function(){
-                try {
-                    const browser = await puppeteer.launch();
-                    const page = await browser.newPage();
-            
-                    await page.goto('https://www.xenrebirth.com/index.php', { waitUntil: 'networkidle0' });
-
-                    await page.waitForSelector('.srv-box2');
-                    await delay(2000);
-            
-                    const index_data = await page.evaluate(() => [
-                        document.querySelectorAll('.srv-box2')[0].textContent,
-                        document.querySelectorAll('.srv-box2')[1].textContent,
-                    ]);
-
-                    await browser.close();
-                    message.channel.send(index_data[0] + " (" + index_data[1] + " Active)");
-
-                } catch (err) {
-                    console.error(err);
-                }
-            })();
+            recursiveTry(getServerStatus, message);
         },
         "description": "Returns the server status and number of users online.",
         "type": "single"
@@ -45,28 +24,7 @@ const commands = {
     "!worldboss":
     {
         "function": function(message){
-            (async function(){
-                try {
-                    const browser = await puppeteer.launch();
-                    const page = await browser.newPage();
-            
-                    await page.goto('https://www.xenrebirth.com/index.php?game-bosstimer/', { waitUntil: 'networkidle0' });
-
-                    await page.waitForSelector('#event-listing');
-                    await delay(2000);
-            
-                    const worldboss_data = await page.evaluate(() => [
-                        document.querySelectorAll('#event-listing .bossRow .event-name strong')[0].textContent,
-                        document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[0].textContent,
-                    ]);
-
-                    await browser.close();
-                    message.channel.send('*' + worldboss_data[0] + '* in __' + worldboss_data[1] + '__');
-
-                } catch (err) {
-                    console.error(err);
-                }
-            })();
+            recursiveTry(getWorldBoss, message);
         },
         "description": "Returns the next world boss' name and spawn time.",
         "type": "single"
@@ -75,33 +33,7 @@ const commands = {
     {
         "function": function(message){
             cron.schedule('50 * * * *', () => {
-                (async function(){
-                    try {
-                        const browser = await puppeteer.launch();
-                        const page = await browser.newPage();
-                
-                        await page.goto('https://www.xenrebirth.com/index.php?game-bosstimer/', { waitUntil: 'networkidle0' });
-    
-                        await page.waitForSelector('#event-listing');
-                        await delay(2000);
-                
-                        const worldboss_data = await page.evaluate(() => [
-                            document.querySelectorAll('#event-listing .bossRow .event-name strong')[0].textContent,
-                            document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[0].textContent,
-                        ]);
-
-                        var string = worldboss_data[1];
-                        string = string.split(/[ ,]+/);
-                        
-                        if(string[0] === "0h"){
-                            message.channel.send('*' + worldboss_data[0] + '* in __10m__');
-                        }
-    
-                        await browser.close();
-                    } catch (err) {
-                        console.error(err);
-                    }
-                })();
+                recursiveTry(getWorldBossAlerts, message);
             });
             message.channel.send('Now alerting channel 10 minutes before world bosses spawn.');
         },
@@ -111,30 +43,7 @@ const commands = {
     "!next":
     {
         "function": function(message){
-            (async function(){
-                try {
-                    const browser = await puppeteer.launch();
-                    const page = await browser.newPage();
-            
-                    await page.goto('https://www.xenrebirth.com/index.php?game-bosstimer/', { waitUntil: 'networkidle0' });
-
-                    await page.waitForSelector('#event-listing');
-                    await delay(2000);
-            
-                    const worldboss_data = await page.evaluate(() => [
-                        document.querySelectorAll('#event-listing .bossRow .event-name strong')[1].textContent,
-                        document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[1].textContent,
-                        document.querySelectorAll('#event-listing .bossRow .event-name strong')[2].textContent,
-                        document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[2].textContent,
-                    ]);
-
-                    await browser.close();
-                    message.channel.send('*' + worldboss_data[0] + '* in __' + worldboss_data[1] + '__\n*' + worldboss_data[2] + '* in __' + worldboss_data[3] + '__');
-
-                } catch (err) {
-                    console.error(err);
-                }
-            })();
+            recursiveTry(getNext, message);
         },
         "description": "Returns the next 2 world bosses.",
         "type": "single"
@@ -142,27 +51,7 @@ const commands = {
     "!servertime":
     {
         "function": function(message){
-            (async function(){
-                try {
-                    const browser = await puppeteer.launch();
-                    const page = await browser.newPage();
-            
-                    await page.goto('https://www.xenrebirth.com/index.php?game-bosstimer/', { waitUntil: 'networkidle0' });
-
-                    await page.waitForSelector('#event-servertime-c');
-                    await delay(2000);
-            
-                    const worldboss_data = await page.evaluate(() => [
-                        document.querySelectorAll('#event-servertime-c')[0].textContent,
-                    ]);
-
-                    await browser.close();
-                    message.channel.send(worldboss_data[0]);
-
-                } catch (err) {
-                    console.error(err);
-                }
-            })();
+            recursiveTry(getServerTime, message);
         },
         "description": "Returns current server time.",
         "type": "single"
@@ -350,14 +239,12 @@ async function getServerStatus(){
     }
 }
 
-async function recursiveTry(_func){
+async function recursiveTry(_func, full_msg){
     test = await _func();
     if(!test){
-        recursiveTry();
+        recursiveTry(_func, full_msg);
     }
     else{
-        console.log(test);
+        message.channel.send(full_msg);
     }
 }
-
-recursiveTry();
