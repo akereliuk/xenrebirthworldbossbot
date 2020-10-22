@@ -202,9 +202,8 @@ async function getWorldBossAlerts(){
             else{
 
                 var string = document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[0].textContent;
-                string = string.split(/[ ,]+/);
 
-                if(string[1] !== "SPAWNED !!!"){
+                if(string !== "SPAWNED !!!"){
                     return "*" + document.querySelectorAll("#event-listing .bossRow .event-name strong")[0].textContent + "* in __10m__";
                 }
                 else{
