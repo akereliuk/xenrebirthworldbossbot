@@ -126,7 +126,7 @@ async function getWorldBoss(){
 
         const worldboss_data = await page.evaluate(() => {
             if(typeof document.querySelectorAll('#event-listing .bossRow .event-name strong')[0] === "undefined"
-                || document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[0] === "undefined"){
+                || typeof document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[0] === "undefined"){
                 return 0;
             }
             else{
@@ -158,22 +158,26 @@ async function getNext(){
         await page.waitForSelector('#event-listing');
 
         const worldboss_data = await page.evaluate(() => {
-            if(typeof document.querySelectorAll('#event-listing .bossRow .event-name strong')[1] === "undefined"
-                || document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[1] === "undefined"
-                || document.querySelectorAll('#event-listing .bossRow .event-name strong')[2] === "undefined"
-                || document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[2] === "undefined"){
+            if(typeof document.querySelectorAll('#event-listing .bossRow .event-name strong')[0] === "undefined"
+                || typeof document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[0] === "undefined"
+                || typeof document.querySelectorAll('#event-listing .bossRow .event-name strong')[1] === "undefined"
+                || typeof document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[1] === "undefined"
+                || typeof document.querySelectorAll('#event-listing .bossRow .event-name strong')[2] === "undefined"
+                || typeof document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[2] === "undefined"){
                 return 0;
             }
             else{
 
                 wb_array = [
+                    document.querySelectorAll('#event-listing .bossRow .event-name strong')[0].textContent,
+                    document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[0].textContent,
                     document.querySelectorAll('#event-listing .bossRow .event-name strong')[1].textContent,
                     document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[1].textContent,
                     document.querySelectorAll('#event-listing .bossRow .event-name strong')[2].textContent,
                     document.querySelectorAll('#event-listing .bossRow .columnTime .event-ctimer')[2].textContent
                 ];
 
-                return '*' + wb_array[0] + '* in __' + wb_array[1] + '__\n*' + wb_array[2] + '* in __' + wb_array[3] + '__';
+                return '*' + wb_array[0] + '* in __' + wb_array[1] + '__\n*' + wb_array[2] + '* in __' + wb_array[3] + '__\n*' + wb_array[4] + '* in __' + wb_array[5] + '__';
             }
         });
 
