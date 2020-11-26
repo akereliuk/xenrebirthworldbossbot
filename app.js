@@ -10,7 +10,7 @@ client.once('ready', () => {
 	console.log('Ready!');
 });
 
-client.login('NzY3NDIxMTU3OTUxMjc1MDA4.X4xqpg.h-diN6oX8v0jrrszU7ND74PWRxY');
+client.login(token);
 
 const commands = {
     "!serverstatus":
